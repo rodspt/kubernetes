@@ -1,0 +1,10 @@
+#Criando a build 
+
+docker build -t rodspt/hello-go
+
+
+#Executando localmente
+docker run --rm -p 81:81 rodspt/hello-go
+
+#Publicando no docker.hub 
+docker push rodspt/hello-go
