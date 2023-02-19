@@ -8,3 +8,84 @@ docker run --rm -p 81:81 rodspt/hello-go
 
 #Publicando no docker.hub 
 docker push rodspt/hello-go
+
+
+# kind
+Aumentar o número de nodes do cluser ( kind.yaml )
+kind create cluster —config=k8s/kind.yaml —name=fullcycle
+
+##POD 
+
+Criar o pod:
+kubectl apply -f k8s/pod.yaml 
+
+Get pod:
+kubectl get pods 
+
+Somente para Testar  ( Redirecionado por porta ):
+kubectl port-forward pod/goserver(nomedoprocesso) 8001:81
+
+Excluir o pod:
+kubectl delete pod goserver(nomedoprocesso)
+
+Detalhando um pod:
+kubectl describe pod goserver(nomedoprocesso)
+
+
+O problema do replicaset é que se você trocar a imagem ele não vai substituir os pods já existentes.
+Você tem que matar ele para que seja criado com a versão nova 
+
+##ReplicaSet
+
+Usando o replicaset:
+kubectl apply -f k8s/replicaset.yaml
+
+Conferindo replicaset:
+kubect get replicasets
+
+Excluindo replicasets
+kubectl delete replicaset goserver(nomedoprocesso)
+
+
+##Deployment
+
+Resolve a substituição de pods do replicaset e substitui os pods gradativamente para que o sistema não fique fora do ar.
+O Deployment não apaga o replicaset apenas deixa de ser usado  para permitir usar o rollout 
+
+
+## Rollout 
+
+Usado para conseguir dá rollback em um processo 
+
+Conferir histórico:
+kubectl rollout history deployment goserver(nomedoprocesso)
+
+Voltar para uma revisão especifica:
+kubectl rollout undo deployment goserver --to-revision=2(numero da revisao)
+
+Voltar para ultima versao:
+kubectl rollout undo deployment goserver
+
+## Services (svc)
+
+Responsavel por fazer a parte de service discovery ou pode trabalhar como LoadBalance para distribuir as aplicações 
+E também é responsavel por alocar um IP fixo para acessar os pods 
+
+Quando trabalhamos com service precisamos informar um seletor com a label que será aplicado (geralmente no matchLabels do deployment)
+Precisamos definir a porta do service e a porta do container - targetPort ( caso não seja informado será a porta do container - port)
+
+##Proxy
+
+Acessar a porta da api do kubernetes : kubectl proxy --port=8080
+http://localhost:8080/api/v1/namespaces/default/services/goserver-service
+
+
+##Log 
+kubectl logs {nomedopod}
+
+##Secret
+type=Opaque  salva em base64
+
+#HelmCheck
+
+

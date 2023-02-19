@@ -1,0 +1,14 @@
+apiVersion: v1 
+kind: Service
+metadata:
+  name: goserver-service
+spec:
+  selector:
+    app: goserver #matchLabels que fica no deployment
+  type:  ClusterIP #ClusterIP, LoadBalance, NodePort (IP externo muito raro)
+  ports:
+  - name: goserver-service
+    port: 80 #porta do service
+    targetPort: 8000  #porta do container (server.go)
+    protocol: TCP
+    #nodePort: 30001 ( >30000 < 32767  usado somente no type: NodePort)

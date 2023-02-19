@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goserver
+  labels:
+    app: goserver
+spec:
+  selector:
+    matchLabels:
+      app: goserver
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: "goserver"
+    spec:
+      containers:
+        - name: goserver
+          image: "rodspt/hello-go:v9"
+          
+          
+          startupProbe: #Verifica se ja iniciou
+            httpGet:  #Method
+              path: /healthz  #endpoint
+              port: 8000  #porta do container nao deve ser do service
+            periodSeconds: 3 #de quanto em quanto deve ser executado
+            failureThreshold: 30 #quantas vezes pode falhar ate dizer que nao iniciou
+
+          readinessProbe: #Verifica se esta ok
+            httpGet:  #Method
+              path: /healthz  #endpoint
+              port: 8000  #porta do container nao deve ser do service
+            periodSeconds: 3 #de quanto em quanto deve ser executado
+            failureThreshold: 1 #quantas vezes tem que falhar para dá o restart padrao 3
+            #initialDelaySeconds: 10 #Tempo minimo de delay (10 + 3 do periodSeconds) se tiver feito o stratupProbe nao precisa
+            
+          livenessProbe: #Recria o container
+            httpGet:  #Method
+              path: /healthz  #endpoint
+              port: 8000  #porta do container nao deve ser do service
+            periodSeconds: 5 #de quanto em quanto deve ser executado
+            failureThreshold: 2 #quantas vezes tem que falhar para dá o restart padrao 3
+            timeoutSeconds:  1 #qual o limite de segundos para uma requisição retornar (se houvesse um teste de banco deveria ser maior)
+            successThreshold: 1 #quantas vezes tem que testar e dá ok para dá sucesso
+            #initialDelaySeconds: 15  #Se tiver feito o stratupProbe nao precisa
+
+          envFrom:
+            - configMapRef:
+                name: goserver-env
+            - secretRef:
+                name: goserver-secret
+               
+          volumeMounts:
+            - mountPath: "/go/myfamily"
+              name: config
+              readOnly: true
+
+          #env por referencia
+          #env:
+          #  - name: NAME 
+          #    valueFrom:
+          #      configMapKeyRef:
+          #        name: goserver-env
+          #        key: NAME
+          #
+          #  - name: AGE 
+          #    valueFrom:
+          #      configMapKeyRef:
+          #        name: goserver-env
+          #        key: AGE
+
+
+
+      volumes:
+        - name: config
+          configMap:
+            name: configmap-family
+            items:
+            - key: members
+              path: "family.txt"   
