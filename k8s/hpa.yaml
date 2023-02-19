@@ -1,0 +1,14 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: goserver-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    name: goserver
+    kind: Deployment
+  minReplicas: 1
+  maxReplicas: 30
+  #Quando chegar em 75% a 80% de uso irá da inicio a inicialização de um novo pod ( depende do tempo que seu pod demora para iniciar)
+  targetCPUUtilizationPercentage: 25
+ 

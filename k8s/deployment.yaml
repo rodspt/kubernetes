@@ -16,33 +16,68 @@ spec:
     spec:
       containers:
         - name: goserver
-          image: "rodspt/hello-go:v9"
-          
-          
-          startupProbe: #Verifica se ja iniciou
-            httpGet:  #Method
-              path: /healthz  #endpoint
-              port: 8000  #porta do container nao deve ser do service
-            periodSeconds: 3 #de quanto em quanto deve ser executado
-            failureThreshold: 30 #quantas vezes pode falhar ate dizer que nao iniciou
+          image: "rodspt/hello-go:v10"
 
-          readinessProbe: #Verifica se esta ok
-            httpGet:  #Method
-              path: /healthz  #endpoint
-              port: 8000  #porta do container nao deve ser do service
-            periodSeconds: 3 #de quanto em quanto deve ser executado
-            failureThreshold: 1 #quantas vezes tem que falhar para dá o restart padrao 3
-            #initialDelaySeconds: 10 #Tempo minimo de delay (10 + 3 do periodSeconds) se tiver feito o stratupProbe nao precisa
+          #Recursos do pods (1 vCPU -> 1000m  - Milicores)  Levar em consideracao o numero de replicas pois vai somar no total
+          resources:
+            #Recursos minimos  como informar metade 500m ou 0.5
+            requests:
+              #cpu: 100m
+              cpu: "0.05"
+              memory: 20Mi
+            #Recurso maximo  (Evitar que a soma de tudo ultrapasse o limite do cluster)
+            limits:
+              #cpu: 500m
+              cpu: "0.05"
+              memory: 25Mi 
+          
+          
+          #Verifica se ja iniciou
+          startupProbe: 
+            #Method
+            httpGet:  
+              #endpoint
+              path: /healthz  
+              #porta do container nao deve ser do service
+              port: 8000  
+            #de quanto em quanto deve ser executado
+            periodSeconds: 3 
+            #quantas vezes pode falhar ate dizer que nao iniciou
+            failureThreshold: 30 
+
+          #Verifica se esta ok
+          readinessProbe: 
+              #Method
+            httpGet: 
+              #endpoint
+              path: /healthz  
+              #porta do container nao deve ser do service
+              port: 8000  
+            #de quanto em quanto deve ser executado
+            periodSeconds: 3 
+            #quantas vezes tem que falhar para dá o restart padrao 3
+            failureThreshold: 1 
+            #Tempo minimo de delay (10 + 3 do periodSeconds) se tiver feito o stratupProbe nao precisa
+            #initialDelaySeconds: 10 
             
-          livenessProbe: #Recria o container
-            httpGet:  #Method
-              path: /healthz  #endpoint
-              port: 8000  #porta do container nao deve ser do service
-            periodSeconds: 5 #de quanto em quanto deve ser executado
-            failureThreshold: 2 #quantas vezes tem que falhar para dá o restart padrao 3
-            timeoutSeconds:  1 #qual o limite de segundos para uma requisição retornar (se houvesse um teste de banco deveria ser maior)
-            successThreshold: 1 #quantas vezes tem que testar e dá ok para dá sucesso
-            #initialDelaySeconds: 15  #Se tiver feito o stratupProbe nao precisa
+          #Recria o container
+          livenessProbe: 
+            #Method
+            httpGet:  
+              #endpoint
+              path: /healthz  
+              #porta do container nao deve ser do service
+              port: 8000  
+            #de quanto em quanto deve ser executado
+            periodSeconds: 5 
+            #quantas vezes tem que falhar para dá o restart padrao 3
+            failureThreshold: 2 
+            #qual o limite de segundos para uma requisição retornar (se houvesse um teste de banco deveria ser maior)
+            timeoutSeconds:  1 
+            #quantas vezes tem que testar e dá ok para dá sucesso
+            successThreshold: 1 
+            #Se tiver feito o stratupProbe nao precisa
+            #initialDelaySeconds: 15  
 
           envFrom:
             - configMapRef:

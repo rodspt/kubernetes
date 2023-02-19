@@ -89,3 +89,31 @@ type=Opaque  salva em base64
 #HelmCheck
 
 
+#metrics services 
+
+Pasta k8s e 
+wget https://github.com/kubernetes-sigs/metrics-server
+
+Adicionar no deployment args do arquivo o argumento:   - --kubelet-insecure-tls
+
+kubectl get apiservices 
+
+#top 
+Ver recursos de um pod 
+kubectl top pod nomedopod 
+monitorar =  watch -n1 kubectl top pod goserver-5cccd64ff6-zz184
+
+
+#HPA ( Horizontal Pod Auto Escale)
+Na maioria das vezes o recurso de CPU basta , mas você até criar metricas personalizadas 
+
+-qps (quantas querys por segundo)
+-t  (tempo de execucao do fortio )
+-c  (quantas tags simultaneas por segundo )
+URL do service 
+Teste de stress =   kubectl run -it --generator=run-pod/v1 --rm --image=fortio/fortio -- load -qps 800 -t 120s -c 70 "http://goserver-service/healthz"
+Teste de stress =   kubectl run -it  --rm --image=fortio/fortio -- load -qps 800 -t 120s -c 70 "http://goserver-service/healthz"
+
+watch -n1 kubectl get hpa 
+
+Outro programa de teste: K6.io
