@@ -111,9 +111,57 @@ Na maioria das vezes o recurso de CPU basta , mas você até criar metricas pers
 -t  (tempo de execucao do fortio )
 -c  (quantas tags simultaneas por segundo )
 URL do service 
-Teste de stress =   kubectl run -it --generator=run-pod/v1 --rm --image=fortio/fortio -- load -qps 800 -t 120s -c 70 "http://goserver-service/healthz"
-Teste de stress =   kubectl run -it  --rm --image=fortio/fortio -- load -qps 800 -t 120s -c 70 "http://goserver-service/healthz"
+Teste de stress =   kubectl run -it fortio --rm --image=fortio/fortio -- load -qps 800 -t 120s -c 70 "http://goserver-service/healthz"
 
 watch -n1 kubectl get hpa 
 
 Outro programa de teste: K6.io
+
+#Volumes Claim 
+kubectl get pvc 
+
+Enquanto não houver uma conexao ficara pendente 
+
+Verificar a conexao com o pvc 
+kubectl get storageclass
+
+Caso esteja em WaitForFirstConsumer  ( significa que ele esta esperando um bind para liberar o volume)
+
+
+#StatefulSet 
+
+Cria sempre em ordem dessa forma você pode definir um master e outros slave 
+
+== Parallel 
+
+Se quiser criar em ordem paralela deve se adicionar o atributo 
+podManagementPolicy: Parallel
+
+no spec do StatefulSet   e caso queira criar uma nova replica pode ser rodado o comando: kubectl scale statefulset mysql --replicas=5
+
+=== Headless Service 
+
+mysql-0.mysql-h.default.sv.cluster.local
+
+=== Listar volumes 
+
+kubectl get pvc
+
+========================
+Install Helm 
+
+curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+sudo apt-get install apt-transport-https --yes
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+sudo apt-get update
+sudo apt-get install helm
+
+=============================
+
+Install Ingress
+
+
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update 
+
+helm install ingress-nginx ingress-neginx/ingress-nginx

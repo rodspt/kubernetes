@@ -89,6 +89,8 @@ spec:
             - mountPath: "/go/myfamily"
               name: config
               readOnly: true
+            - mountPath: "/go/pvc"
+              name: goserver-volume
 
           #env por referencia
           #env:
@@ -107,6 +109,13 @@ spec:
 
 
       volumes:
+        #poderia ser qualquer nome
+        - name: goserver-volume 
+          persistentVolumeClaim:
+            #esse tem que ser o nome do pvc.yaml
+            claimName: goserver-pvc
+            #em seguida configurar o volumeMOunts linha 92
+
         - name: config
           configMap:
             name: configmap-family

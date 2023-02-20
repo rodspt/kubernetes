@@ -8,7 +8,7 @@ spec:
     name: goserver
     kind: Deployment
   minReplicas: 1
-  maxReplicas: 30
+  maxReplicas: 5
   #Quando chegar em 75% a 80% de uso irá da inicio a inicialização de um novo pod ( depende do tempo que seu pod demora para iniciar)
-  targetCPUUtilizationPercentage: 25
+  targetCPUUtilizationPercentage: 75
  

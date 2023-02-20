@@ -1,0 +1,11 @@
+apiVersion: v1 
+kind: Service
+metadata:
+  #O nome tem que ser identico ao serviceName do statefulset
+  name: mysql-h
+spec:
+  selector:
+    app: mysql
+  ports:
+    - port: 3306
+  clusterIP: None #Ele vai fazer pelo serviceName
